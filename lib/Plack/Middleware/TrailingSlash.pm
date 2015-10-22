@@ -34,15 +34,15 @@ sub call {
 
     # Ignore if in the ignore list
     if ( defined $self->ignore ) {
-	unless ( ref($self->ignore) eq 'ARRAY' ) {
-	    warn "not arrayref";
-	    $self->ignore( [ $self->ignore ] );
-	}
+        unless ( ref($self->ignore) eq 'ARRAY' ) {
+            warn "not arrayref";
+            $self->ignore( [ $self->ignore ] );
+        }
 
 	    foreach my $ign ( @{$self->ignore} ) {
-		if ($p =~ $ign) {
-		    return $self->app->($env);
-		}
+            if ($p =~ $ign) {
+                return $self->app->($env);
+            }
 	    }
     }
 
@@ -55,13 +55,16 @@ sub call {
         # without a query string
         $uri .= '/';
     }
+
     my $res = $req->new_response(301); # new Plack::Response
     $res->headers([ 'Location' => $uri, 'Content-Type' => 'text/html; charset=UTF-8' ]);
+
     my $uhe = encode_entities($uri);
     $res->body(
         '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"><html><head><title>301 Moved Permanently</title></head>'
         .'<body><h1>Moved Permanently</h1><p>The document has moved <a href="'.$uhe.'">here</a>.</p></body></html>'
     );
+
     return $res->finalize;
 };
 
