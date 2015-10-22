@@ -1,18 +1,19 @@
 package Plack::Middleware::TrailingSlash;
-use strict;
+
+use Moose;
 BEGIN {
     $Plack::Middleware::TrailingSlash::AUTHORITY = 'cpan:okko';
 }
 BEGIN {
     $Plack::Middleware::TrailingSlash::VERSION = '0.001';
 }
-use Moose;
 use namespace::autoclean;
 use Plack::Request;
 use HTML::Entities;
 
 extends 'Plack::Middleware';
 
+# use Plack::Util::Accessor qw( ignore );
 has 'ignore' => (is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 
 sub call {
@@ -32,10 +33,9 @@ sub call {
         return $self->app->($env);
     }
 
-    # Ignore if in the ignore list
+    # Ignore if path is in the ignores list
     if ( defined $self->ignore ) {
         unless ( ref($self->ignore) eq 'ARRAY' ) {
-            warn "not arrayref";
             $self->ignore( [ $self->ignore ] );
         }
 
@@ -71,3 +71,66 @@ sub call {
 # If you are certain you don't need to inline your constructor, specify inline_constructor => 0 in your call to Plack::Middleware::TrailingSlash->meta->mak
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+Plack::Middleware::TrailingSlash - Append a trailing slash to GET requests whenever it is missing
+
+=head1 SYNOPSIS
+
+  builder {
+    enable 'TrailingSlash';
+  };
+
+=head1 DESCRIPTION
+
+Redirect to a path containing the trailing slash if the path looks like a directory
+
+The Catalyst Perl MVC framework matches the requested URL to an action
+both with and without the trailing slash. For example both /company/contact and
+/company/contact/ go to the same action and same template.
+
+This module redirects the requests without the trailing slash (ie. /company/contact)
+to the same URL with the trailing slash added (ie. /company/contact/).
+
+=head1 PARAMETERS
+
+=over 1
+
+=item ignore
+
+A string or an array reference with a list of paths to ignore the trailingslash
+handling.
+
+  builder {
+    enable 'TrailingSlash', ignore => 'foobar';
+  };
+
+  builder {
+    enable 'TrailingSlash', ignore => [ 'foobar', 'lolcat' ];
+  };
+
+=back
+
+=head1 SEE ALSO
+
+L<Plack::Middleware>
+L<Plack::Middleware::TrailingSlashKiller>
+
+=head1 AUTHOR
+
+Oskari Ojala E<lt>oskari.ojala@frantic.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2013 - Oskari Ojala
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
