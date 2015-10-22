@@ -7,6 +7,7 @@ BEGIN {
     $Plack::Middleware::TrailingSlash::VERSION = '0.001';
 }
 use Moose;
+use namespace::autoclean;
 use Plack::Request;
 use HTML::Entities;
 
@@ -23,7 +24,7 @@ sub call {
     if ($req->method() ne 'GET') {
         return $self->app->($env);
     }
-    
+
     # Ignore if we are happy with the URL
     if ($p =~ /^.*\/$/                    # Slash at the end OR
         or $p =~ /^.*\/[^\/]+\.[^\/]+$/   # dot in the filename after the last /
@@ -32,10 +33,17 @@ sub call {
     }
 
     # Ignore if in the ignore list
-    foreach my $ign (@{$self->ignore()}) {
-        if ($p =~ $ign) {
-            return $self->app->($env);
-        }
+    if ( defined $self->ignore ) {
+	unless ( ref($self->ignore) eq 'ARRAY' ) {
+	    warn "not arrayref";
+	    $self->ignore( [ $self->ignore ] );
+	}
+
+	    foreach my $ign ( @{$self->ignore} ) {
+		if ($p =~ $ign) {
+		    return $self->app->($env);
+		}
+	    }
     }
 
     # If we're here the pattern indicates it is a GET request to a directory path and should have a trailing slash.
@@ -57,4 +65,6 @@ sub call {
     return $res->finalize;
 };
 
+# If you are certain you don't need to inline your constructor, specify inline_constructor => 0 in your call to Plack::Middleware::TrailingSlash->meta->mak
+__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;
