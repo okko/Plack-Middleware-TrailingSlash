@@ -57,7 +57,11 @@ sub call {
     }
 
     my $res = $req->new_response(301); # new Plack::Response
-    $res->headers([ 'Location' => $uri, 'Content-Type' => 'text/html; charset=UTF-8' ]);
+    $res->headers([
+	'Location' => $uri,
+	'Content-Type' => 'text/html; charset=UTF-8',
+	'Cache-Control' => 'must-revalidate, max-age=3600'
+    ]);
 
     my $uhe = encode_entities($uri);
     $res->body(
@@ -68,7 +72,6 @@ sub call {
     return $res->finalize;
 };
 
-# If you are certain you don't need to inline your constructor, specify inline_constructor => 0 in your call to Plack::Middleware::TrailingSlash->meta->mak
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 1;
 __END__
@@ -96,6 +99,9 @@ both with and without the trailing slash. For example both /company/contact and
 This module redirects the requests without the trailing slash (ie. /company/contact)
 to the same URL with the trailing slash added (ie. /company/contact/).
 
+Redirects are done permanently to avoid duplicate content in search indexes, but is
+given a max age of 3600 to prevent browsers from caching the redirect indefinitely.
+
 =head1 PARAMETERS
 
 =over 1
@@ -106,11 +112,11 @@ A string or an array reference with a list of paths to ignore the trailingslash
 handling.
 
   builder {
-    enable 'TrailingSlash', ignore => 'foobar';
+    enable 'TrailingSlash', ignore => [qr/^\/foobar\//];
   };
 
   builder {
-    enable 'TrailingSlash', ignore => [ 'foobar', 'lolcat' ];
+    enable 'TrailingSlash', ignore => [ qr/^\/foobar\//, qr/^\/lolcat\// ];
   };
 
 =back
@@ -126,7 +132,7 @@ Oskari Ojala E<lt>oskari.ojala@frantic.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2013 - Oskari Ojala
+Copyright 2013-2015 - Oskari Ojala
 
 =head1 LICENSE
 
