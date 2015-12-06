@@ -1,0 +1,6 @@
+Changelog for Plack::Middleware::TrailingSlash
+
+0.001     2015-12-06 10:54:00 Europe/Helsinki
+
+    * Initial release.
+
