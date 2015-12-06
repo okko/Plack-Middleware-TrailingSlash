@@ -126,9 +126,10 @@ handling.
 L<Plack::Middleware>
 L<Plack::Middleware::TrailingSlashKiller>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Oskari Ojala E<lt>oskari.ojala@frantic.comE<gt>
+Josep Roca
 
 =head1 COPYRIGHT
 
