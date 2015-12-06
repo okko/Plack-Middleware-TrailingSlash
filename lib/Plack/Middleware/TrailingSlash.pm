@@ -43,7 +43,7 @@ sub call {
             if ($p =~ $ign) {
                 return $self->app->($env);
             }
-	}
+        }
     }
 
     # If we're here the pattern indicates it is a GET request to a directory path and should have a trailing slash.
