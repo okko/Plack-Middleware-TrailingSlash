@@ -39,7 +39,7 @@ sub call {
             $self->ignore( [ $self->ignore ] );
         }
 
-	foreach my $ign ( @{$self->ignore} ) {
+        foreach my $ign ( @{$self->ignore} ) {
             if ($p =~ $ign) {
                 return $self->app->($env);
             }
