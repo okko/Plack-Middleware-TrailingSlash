@@ -58,9 +58,9 @@ sub call {
 
     my $res = $req->new_response(301); # new Plack::Response
     $res->headers([
-	'Location' => $uri,
-	'Content-Type' => 'text/html; charset=UTF-8',
-	'Cache-Control' => 'must-revalidate, max-age=3600'
+        'Location' => $uri,
+        'Content-Type' => 'text/html; charset=UTF-8',
+        'Cache-Control' => 'must-revalidate, max-age=3600'
     ]);
 
     my $uhe = encode_entities($uri);
